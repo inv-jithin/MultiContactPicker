@@ -28,14 +28,17 @@ class MultiContactPickerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private List<Contact> contactItemListOriginal;
     private ContactSelectListener listener;
     private String currentFilterQuery;
+    private int maxSelectionCount;
 
     interface ContactSelectListener{
         void onContactSelected(Contact contact, int totalSelectedContacts);
+        void onLimitExceed();
     }
 
-    MultiContactPickerAdapter(List<Contact> contactItemList, ContactSelectListener listener) {
+    MultiContactPickerAdapter(List<Contact> contactItemList, int maxCount, ContactSelectListener listener) {
         this.contactItemList = contactItemList;
         this.contactItemListOriginal = contactItemList;
+        this.maxSelectionCount = maxCount;
         this.listener = listener;
     }
 
@@ -89,6 +92,15 @@ class MultiContactPickerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             contactViewHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (getSelectedContactsCount() >= maxSelectionCount) {
+                        int pos = getItemPosition(contactItemList, contactItem.getId());
+                        if (!contactItemList.get(pos).isSelected()) {
+                            if (listener != null) {
+                                listener.onLimitExceed();
+                            }
+                            return;
+                        }
+                    }
                     setContactSelected(contactItem.getId());
                     if (listener != null) {
                         listener.onContactSelected(getItem(i), getSelectedContactsCount());
