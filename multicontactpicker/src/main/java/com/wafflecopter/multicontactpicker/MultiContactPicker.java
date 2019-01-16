@@ -41,6 +41,10 @@ public class MultiContactPicker {
         protected int loadingMode = LOAD_ASYNC;
         protected ArrayList<Long> selectedItems = new ArrayList<>();
         protected String titleText;
+        protected int maxSelectionCount = 3;
+        protected String maxErrorMessage;
+        protected String submitButtonText;
+        protected String emptyContactMessage;
 
         public Builder(@NonNull Activity act) {
             this.acc = act;
@@ -92,6 +96,26 @@ public class MultiContactPicker {
 
         public Builder setChoiceMode(int selectionMode){
             this.selectionMode = selectionMode;
+            return this;
+        }
+
+        public Builder setMaxCount(int count) {
+            this.maxSelectionCount = count;
+            return this;
+        }
+
+        public Builder setMaxErrorMessage(String message) {
+            this.maxErrorMessage = message;
+            return this;
+        }
+
+        public Builder setSubmitButtonText(String text) {
+            this.submitButtonText = text;
+            return this;
+        }
+
+        public Builder setEmptyMessage(String text) {
+            this.emptyContactMessage = text;
             return this;
         }
 
