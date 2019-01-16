@@ -9,6 +9,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
         <activity android:name=".MultiContactPickerActivity"
+                  android:screenOrientation="portrait"
                   android:label="@string/picker_title">
         </activity>
     </application>
