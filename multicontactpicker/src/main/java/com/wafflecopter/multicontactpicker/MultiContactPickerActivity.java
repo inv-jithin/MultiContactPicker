@@ -3,10 +3,12 @@ package com.wafflecopter.multicontactpicker;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,12 +86,21 @@ public class MultiContactPickerActivity extends AppCompatActivity implements Mat
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 
-        adapter = new MultiContactPickerAdapter(contactList, new MultiContactPickerAdapter.ContactSelectListener() {
+        adapter = new MultiContactPickerAdapter(contactList, builder.maxSelectionCount, new MultiContactPickerAdapter.ContactSelectListener() {
             @Override
             public void onContactSelected(Contact contact, int totalSelectedContacts) {
                 updateSelectBarContents(totalSelectedContacts);
                 if(builder.selectionMode == MultiContactPicker.CHOICE_MODE_SINGLE){
                     finishPicking();
+                }
+            }
+
+            @Override
+            public void onLimitExceed() {
+                if (!TextUtils.isEmpty(builder.maxErrorMessage)) {
+                    Snackbar snackbar = Snackbar
+                            .make(recyclerView, builder.maxErrorMessage, Snackbar.LENGTH_LONG);
+                    snackbar.show();
                 }
             }
         });
@@ -136,11 +147,11 @@ public class MultiContactPickerActivity extends AppCompatActivity implements Mat
 
     private void updateSelectBarContents(int totalSelectedContacts){
         tvSelectBtn.setEnabled(totalSelectedContacts > 0);
-        if(totalSelectedContacts > 0) {
-            tvSelectBtn.setText(getString(R.string.tv_select_btn_text_enabled, String.valueOf(totalSelectedContacts)));
-        } else {
-            tvSelectBtn.setText(getString(R.string.tv_select_btn_text_disabled));
-        }
+//        if(totalSelectedContacts > 0) {
+//            tvSelectBtn.setText(getString(R.string.tv_select_btn_text_enabled, String.valueOf(totalSelectedContacts)));
+//        } else {
+//            tvSelectBtn.setText(getString(R.string.tv_select_btn_text_disabled));
+//        }
     }
 
     private void initialiseUI(MultiContactPicker.Builder builder){
@@ -164,6 +175,14 @@ public class MultiContactPickerActivity extends AppCompatActivity implements Mat
             controlPanel.setVisibility(View.GONE);
         }else{
             controlPanel.setVisibility(View.VISIBLE);
+        }
+
+        if (!TextUtils.isEmpty(builder.submitButtonText)) {
+            tvSelectBtn.setText(builder.submitButtonText);
+        }
+
+        if (!TextUtils.isEmpty(builder.emptyContactMessage)) {
+            tvNoContacts.setText(builder.emptyContactMessage);
         }
 
         if(builder.selectionMode == MultiContactPicker.CHOICE_MODE_SINGLE && builder.selectedItems.size() > 0){
